@@ -1,0 +1,50 @@
+# primer contenedor
+
+docker run -d -p 8088:80 -v ${PWD}/apache:/var/www/html --name mi-contenedor-php php:apache-bullseye
+docker exec -it mi-contenedor-php docker-php-ext-install mysqli
+docker exec -it mi-contenedor-php docker-php-ext-enable mysqli
+
+# segundo contenedor
+
+docker run -d -p 3306:3306 --name mi-contenedor-mysql -e MYSQL_ROOT_PASSWORD=root1 -v ${PWD}/db:/var/lib/mysql mysql:debian
+docker exec -it mi-contenedor-mysql mysql -u root -proot1 -e "CREATE DATABASE IF NOT EXISTS prueba;"
+docker exec -it mi-contenedor-mysql mysql -u root -proot1 prueba < datos.sql
+
+
+# comando para acceder al contenedor 
+docker exec -it mi-contenedor-php /bin/bash
+
+# driver mysql
+
+docker-php-ext-install mysqli
+docker-php-ext-enable mysqli
+
+service apache2 restart
+
+# inspeccionar el ip del contenedor y colocarlo en php  $servername = "172.17.0.2";
+
+docker inspect mi-contenedor-mysql
+
+
+
+
+
+# levantar el contenedor de haproxy
+docker run -d --name haproxy-container -p 8085:80 haproxy:latest
+
+
+
+
+
+#  comandos de Windows para copiar el archivo haproxy.cfg al contenedor de haproxy:
+# codigo similares probar uno de los dos 
+
+docker cp "C:\Users\MECATRONICA 2\Desktop\Contenedores_con_Apache_y_mysql\haproxy\haproxy.cfg" haproxy-container:/usr/local/etc/haproxy/haproxy.cfg
+
+
+docker cp ${PWD}/haproxy/haproxy.cfg haproxy-container:/usr/local/etc/haproxy/haproxy.cfg
+
+
+
+# inpeccionar el contenedor
+docker logs haproxy-container
